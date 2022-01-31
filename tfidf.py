@@ -6,8 +6,9 @@ from config import *
 
 class TFIDF:
 
-    def __init__(self, df_corpus):
+    def __init__(self, df_corpus, threshold=0.5):
         self.df_corpus = df_corpus
+        self.threshold = threshold
         # Create Td-idf model & embed documents
         self.model_text = TfidfVectorizer(stop_words='english', binary=True, max_features=25_000)
         self.embeddings_corpus = self.model_text.fit_transform(df_corpus.title).toarray()
@@ -22,7 +23,7 @@ class TFIDF:
         # Output results
         results = {}
         for (_, query), group in zip(df_query.iterrows(), cosine_similarity):
-            matched_index = np.where(group >= TFIDF_THRESHOLD)
+            matched_index = np.where(group >= self.threshold)
             matched_list = self.df_corpus.iloc[matched_index[0]].posting_id.to_list()
             results[query.posting_id] = matched_list
 
