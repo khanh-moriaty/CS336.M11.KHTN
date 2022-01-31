@@ -1,0 +1,3 @@
+DATASET_DIR = '/dataset'
+
+TFIDF_THRESHOLD = 0.5
