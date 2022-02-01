@@ -28,6 +28,8 @@ df['title'] = df['title'].apply(lambda s: re.sub('[^\w]+', ' ', s))
 df['title'] = df['title'].apply(lambda s: re.sub('  ', ' ', s))
 df['title'] = df['title'].apply(lambda s: re.sub('^ ', '', s))
 df['title'] = df['title'].apply(lambda s: re.sub(' $', '', s))
+# Convert to lowercase
+df['title'] = df['title'].apply(lambda s: s.lower())
 
 # Sample 2 elements from each group for query set
 sample_list = df.groupby('label_group').sample(n=2, random_state=42).posting_id
