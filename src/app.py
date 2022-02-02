@@ -2,7 +2,7 @@ import os
 import time
 
 import pandas as pd
-from flask import Flask, request
+from flask import Flask, request, send_file
 
 from models.text.tfidf import TFIDF
 from models.text.bm25 import BM25
@@ -32,6 +32,20 @@ def query_df(df_query, model_text, model_image):
     processing_time = end_time - start_time
 
     return results, processing_time
+
+def get_img_path(img_name):
+    img_path = os.path.join(config.DATASET_DIR, 'train_images', img_name)
+    if os.path.exists(img_path):
+        return img_path
+    else:
+        return None
+
+@app.route("/v1/img/<img_name>")
+def fetch_img(img_name):
+    img_path = get_img_path(img_name)
+    if not img_path:
+        return {'error': 'Image name not found.'}, 400
+    return send_file(img_path, as_attachment=True)
 
 @app.route("/v1/exp")
 def query_exp():
