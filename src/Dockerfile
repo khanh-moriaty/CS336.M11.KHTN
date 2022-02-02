@@ -6,4 +6,4 @@ RUN     pip install -r requirements.txt
 COPY    ./ src/
 WORKDIR src/
 
-CMD     flask run -h 0.0.0.0 -p 7777
+CMD     flask run -h 0.0.0.0

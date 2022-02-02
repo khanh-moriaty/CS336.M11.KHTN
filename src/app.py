@@ -4,9 +4,9 @@ import time
 import pandas as pd
 from flask import Flask, request
 
-from tfidf import TFIDF
-from bm25 import BM25
-from evaluate import EvaluateMAP
+from models.text.tfidf import TFIDF
+from models.text.bm25 import BM25
+from utils.evaluate import EvaluateMAP
 from config import *
 
 app = Flask(__name__)
@@ -37,4 +37,4 @@ def query():
     end_time = time.time()
     response['processing_time'] = end_time - start_time
 
-    return results
+    return response
