@@ -17,6 +17,8 @@ models = {
     'tfidf': TFIDF(df_corpus, config.TFIDF_THRESHOLD)
 }
 
+evaluate_map = EvaluateMAP(df_corpus, df_query)
+
 app = Flask(__name__)
 
 def query_df(df_query, model_text, model_image):
@@ -53,12 +55,13 @@ def query_exp():
     model_image = request.args.get('model_image', default='')
 
     results, processing_time = query_df(df_query, model_text, model_image)
+    score = evaluate_map(results)
 
     return {
         'model_text': model_text,
         'model_image': model_image,
         'processing_time': processing_time,
-        'results': results,
+        'score': score,
     }
 
 @app.route("/v1/query")
