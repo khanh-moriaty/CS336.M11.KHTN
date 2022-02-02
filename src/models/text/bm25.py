@@ -3,9 +3,10 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from rank_bm25 import BM25Okapi
 
+from models.model import Model
 from config import *
 
-class BM25:
+class BM25(Model):
 
     def __init__(self, df_corpus, topk=50):
         self.df_corpus = df_corpus

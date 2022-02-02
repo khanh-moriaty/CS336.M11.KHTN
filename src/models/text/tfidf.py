@@ -2,9 +2,10 @@ import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
+from models.model import Model
 from config import *
 
-class TFIDF:
+class TFIDF(Model):
 
     def __init__(self, df_corpus, threshold=0.5):
         self.df_corpus = df_corpus

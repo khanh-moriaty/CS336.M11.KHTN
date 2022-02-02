@@ -2,9 +2,10 @@ import os
 
 import pandas as pd
 
-from tfidf import TFIDF
-from bm25 import BM25
-from evaluate import EvaluateMAP
+from models.text.tfidf import TFIDF
+from models.text.bm25 import BM25
+from models.model import Model
+from utils.evaluate import EvaluateMAP
 from config import *
 
 if __name__ == '__main__':
