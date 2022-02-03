@@ -2,7 +2,8 @@ import os
 import time
 
 import pandas as pd
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, url_for
+from werkzeug.utils import secure_filename
 
 from models.text.tfidf import TFIDF
 from models.text.bm25 import BM25
@@ -20,6 +21,10 @@ models = {
 evaluate_map = EvaluateMAP(df_corpus, df_query)
 
 app = Flask(__name__)
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+app.config['UPLOAD_FOLDER'] = '/images'
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 def query_df(df_query, model_text, model_image):
     start_time = time.time()
@@ -48,6 +53,26 @@ def fetch_img(img_name):
     if not img_path:
         return {'error': 'Image name not found.'}, 400
     return send_file(img_path, as_attachment=True)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route("/v1/upload", methods=["POST"])
+def upload_img():
+    # check if the post request has the file part
+    if 'file' not in request.files:
+        return 400
+    file = request.files['file']
+    # If the user does not select a file, the browser submits an
+    # empty file without a filename.
+    if file.filename == '':
+        return 400
+    if file and allowed_file(file.filename):
+        filename = str(int(time.time())) + '_' + secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        print(url_for('fetch_img', img_name=filename))
+        return url_for('fetch_img', img_name=filename)
 
 @app.route("/v1/exp")
 def query_exp():
@@ -89,3 +114,6 @@ def query():
         'processing_time': processing_time,
         'results': results[''],
     }
+
+if __name__ == "__main__":
+  app.run(host='0.0.0.0', port=5000, debug=True)
