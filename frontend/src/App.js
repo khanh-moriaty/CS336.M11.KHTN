@@ -106,6 +106,7 @@ export default function App() {
     const classes = useStyles();
 
     const [currentImage, setCurrentImage] = React.useState("https://i.imgur.com/D0MTKX7.jpg");
+    const [currentTitle, setCurrentTitle] = React.useState("");
 
     const handleFileInputChange = (e) => {
         const file = e.target.files[0];
@@ -171,7 +172,14 @@ export default function App() {
                         <Paper elevation={4} style={{ padding: '30px' }}>
                             <Grid container spacing={4} alignItems="center">
                                 <Grid item xs={12} md={6}>
-                                    <TextField id="outlined-basic" label="Product title" variant="outlined" size="small" />
+                                    <TextField 
+                                    label="Product title" 
+                                    value={currentTitle} 
+                                    onChange={(e) => { setCurrentTitle(e.target.value) }} 
+                                    id="outlined-basic" 
+                                    variant="outlined" 
+                                    size="small" 
+                                    />
                                     <label htmlFor="contained-button-file">
                                         <img
                                             src={currentImage}
@@ -184,7 +192,7 @@ export default function App() {
                                         />
                                     </label>
                                     <input
-                                        style={{whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", width: "250px"}}
+                                        style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", width: "250px" }}
                                         accept="image/*"
                                         className={classes.input}
                                         id="contained-button-file"
@@ -237,6 +245,10 @@ export default function App() {
                                                 <Product
                                                     image={example.image}
                                                     title={example.title}
+                                                    onClick={() => {
+                                                        setCurrentImage(example.image);
+                                                        setCurrentTitle(example.title);
+                                                    }}
                                                 />
                                             </Grid>
                                         ))}

@@ -9,22 +9,21 @@ import {
 export default function Message(props) {
 
     return (
-        <Card style={{display: 'flex', flexGrow: "1"}}>
-            <CardActionArea style={{display: 'flex', flexDirection: "column"}}>
+        <Card style={{ display: 'flex', flexGrow: "1" }}>
+            <CardActionArea style={{ display: 'flex', flexDirection: "column" }} onClick={props.onClick}>
                 <CardMedia
                     component="img"
                     // height="120"
-                    style={{objectFit: 'fill'}}
+                    style={{ objectFit: 'fill' }}
                     image={props.image}
                 />
-                <CardContent style={{display: 'flex', flexDirection: "column", flex: '1'}}>
+                <CardContent style={{ display: 'flex', flexDirection: "column", flex: '1' }}>
                     <Typography variant="caption2" color="text.secondary">
                         {props.title}
                     </Typography>
                 </CardContent>
             </CardActionArea>
         </Card>
-    )
-        ;
+    );
 
 }
