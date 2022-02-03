@@ -77,7 +77,7 @@ function Copyright() {
 const exampleList = [
     {
         image: "https://i.imgur.com/K7q92AB.jpg",
-        title: "choco ball lagie coklat lagie grosir..." // cokelat lagie murah chocoball kiloan chocobal coklat kiloan 1kg"
+        title: "choco ball lagie coklat lagie grosircokelat lagie murah chocoball kiloan chocobal coklat kiloan 1kg"
     },
     {
         image: "https://i.imgur.com/oVwBnvh.jpg",
@@ -85,7 +85,7 @@ const exampleList = [
     },
     {
         image: "https://i.imgur.com/4k3vVKr.jpg",
-        title: "arshop maycreate moisturizing uv spray..." // 150ml 1 kg muat 6pcs"
+        title: "arshop maycreate moisturizing uv spray 150ml 1 kg muat 6pcs"
     },
     {
         image: "https://i.imgur.com/D0MTKX7.jpg",
@@ -93,7 +93,7 @@ const exampleList = [
     },
     {
         image: "https://i.imgur.com/D0MTKX7.jpg",
-        title: "tunik dzuvia kancing hidup syari moscr..." // epe premium"
+        title: "tunik dzuvia kancing hidup syari moscrepe premium"
     },
     {
         image: "https://i.imgur.com/D0MTKX7.jpg",

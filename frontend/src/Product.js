@@ -19,7 +19,7 @@ export default function Message(props) {
                 />
                 <CardContent style={{ display: 'flex', flexDirection: "column", flex: '1' }}>
                     <Typography variant="caption2" color="text.secondary">
-                        {props.title}
+                        {props.title.slice(0, 32) + (props.title.length > 32 ? '...' : '')}
                     </Typography>
                 </CardContent>
             </CardActionArea>
