@@ -23,8 +23,7 @@ evaluate_map = EvaluateMAP(df_corpus, df_query)
 app = Flask(__name__)
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
-app.config['UPLOAD_FOLDER'] = '/images'
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+os.makedirs(config.UPLOAD_DIR, exist_ok=True)
 
 def query_df(df_query, model_text, model_image):
     start_time = time.time()
@@ -45,7 +44,11 @@ def get_img_path(img_name):
     if os.path.exists(img_path):
         return img_path
     else:
-        return None
+        img_path = os.path.join(config.UPLOAD_DIR, img_name)
+        if os.path.exists(img_path):
+            return img_path
+        else:
+            return None
 
 @app.route("/v1/img/<img_name>")
 def fetch_img(img_name):
@@ -70,9 +73,9 @@ def upload_img():
         return 400
     if file and allowed_file(file.filename):
         filename = str(int(time.time())) + '_' + secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        file.save(os.path.join(config.UPLOAD_DIR, filename))
         print(url_for('fetch_img', img_name=filename))
-        return url_for('fetch_img', img_name=filename)
+        return {'image_path': url_for('fetch_img', img_name=filename)}
 
 @app.route("/v1/exp")
 def query_exp():
