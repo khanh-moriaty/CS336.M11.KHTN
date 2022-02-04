@@ -38,6 +38,10 @@ const useStyles = makeStyles((theme) => ({
     },
     formButtom: {
         marginTop: '0.5em',
+    },
+    result: {
+        display: 'flex',
+        padding: theme.spacing(2),
     }
 }));
 
@@ -97,7 +101,7 @@ export default function Gallery(props) {
     }, [props.page])
 
     return (
-        <Container style={{ padding: "0px 50px" }}>
+        <Container style={{ padding: "0px 20px" }}>
             <Pagination
                 className={classes.pagination}
                 ref={topPagination}
@@ -132,9 +136,9 @@ export default function Gallery(props) {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Grid container spacing={4} alignItems="stretch" style={{ margin: "20px 0px" }}>
+            <Grid container alignItems="stretch" style={{ margin: "20px 0px" }}>
                 {props.currentPage.map((example) => (
-                    <Grid item key={1} xs={6} sm={3} md={2} style={{ display: 'flex' }}>
+                    <Grid item key={1} xs={6} sm={3} md={2} className={classes.result}>
                         {example}
                     </Grid>
                 ))}
