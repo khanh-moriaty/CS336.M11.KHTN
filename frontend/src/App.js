@@ -26,6 +26,7 @@ import {
 } from '@material-ui/core';
 
 import Product from './Product';
+import Gallery from './Gallery';
 
 const theme = responsiveFontSizes(createTheme({
     typography: {
@@ -132,6 +133,20 @@ export default function App() {
             });
     }
 
+    var tmpList = [];
+    for (var i=0; i<100; ++i)
+        tmpList = tmpList.concat(exampleList);
+
+    const [imgList, setImgList] = React.useState(tmpList);
+    const [page, setPage] = React.useState(1);
+    const [currentPage, setCurrentPage] = React.useState([]);
+    const imgCols = 6;
+    const imgRows = 12;
+
+    React.useEffect(() => {
+        setPage(1);
+    }, [imgList]);
+
     return (
         <div className="App">
             <ThemeProvider theme={theme}>
@@ -172,13 +187,13 @@ export default function App() {
                         <Paper elevation={4} style={{ padding: '30px' }}>
                             <Grid container spacing={4} alignItems="center">
                                 <Grid item xs={12} md={6}>
-                                    <TextField 
-                                    label="Product title" 
-                                    value={currentTitle} 
-                                    onChange={(e) => { setCurrentTitle(e.target.value) }} 
-                                    id="outlined-basic" 
-                                    variant="outlined" 
-                                    size="small" 
+                                    <TextField
+                                        label="Product title"
+                                        value={currentTitle}
+                                        onChange={(e) => { setCurrentTitle(e.target.value) }}
+                                        id="outlined-basic"
+                                        variant="outlined"
+                                        size="small"
                                     />
                                     <label htmlFor="contained-button-file">
                                         <img
@@ -257,6 +272,12 @@ export default function App() {
                             </Grid>
                         </Paper>
                     </Container>
+
+                    <Gallery
+                        imgList={imgList} imgPerPage={18}
+                        setPage={setPage} setCurrentPage={setCurrentPage}
+                        page={page} currentPage={currentPage}
+                    />
                 </Box>
                 {/* Footer */}
                 <Box sx={{ bgcolor: 'background.paper', p: 6 }} component="footer">
