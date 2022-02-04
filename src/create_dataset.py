@@ -11,13 +11,14 @@ df_path = os.path.join(DATASET_DIR, 'train.csv')
 df = pd.read_csv(df_path)
 
 print('Loading dataset from', df_path)
+print('Found', len(df['label_group'].unique()), 'label groups.')
 
 # Filter groups with at least 10 elements
 df = df[df.label_group.isin(
-    df.groupby('label_group').count().query('posting_id >= 10').index
+    df.groupby('label_group').count().query('posting_id >= 5').index
 )]
 
-print('Found', len(df), 'groups with at least 10 elements.')
+print(f'Found {len(df["label_group"].unique())} groups ({len(df)} items) with at least 5 elements.')
 print('Sampling query set...')
 
 # Remove \xHH characters from title
