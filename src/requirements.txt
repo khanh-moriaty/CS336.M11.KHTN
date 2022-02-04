@@ -2,3 +2,5 @@ pandas
 sklearn
 rank_bm25
 flask
+opencv-python
+tqdm
