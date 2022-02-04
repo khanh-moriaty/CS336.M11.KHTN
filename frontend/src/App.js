@@ -137,15 +137,14 @@ export default function App() {
     for (var i=0; i<100; ++i)
         tmpList = tmpList.concat(exampleList);
 
-    const [imgList, setImgList] = React.useState(tmpList);
+    const [resultList, setResultList] = React.useState(tmpList);
     const [page, setPage] = React.useState(1);
     const [currentPage, setCurrentPage] = React.useState([]);
-    const imgCols = 6;
-    const imgRows = 12;
+    const imgPerPage = 18;
 
     React.useEffect(() => {
         setPage(1);
-    }, [imgList]);
+    }, [resultList]);
 
     return (
         <div className="App">
@@ -274,7 +273,7 @@ export default function App() {
                     </Container>
 
                     <Gallery
-                        imgList={imgList} imgPerPage={18}
+                        imgList={resultList} imgPerPage={imgPerPage}
                         setPage={setPage} setCurrentPage={setCurrentPage}
                         page={page} currentPage={currentPage}
                     />
