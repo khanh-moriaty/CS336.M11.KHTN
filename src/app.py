@@ -1,8 +1,9 @@
 import os
 import time
+import json
 
 import pandas as pd
-from flask import Flask, request, send_file, url_for
+from flask import Flask, request, send_file
 from werkzeug.utils import secure_filename
 
 from models.text.tfidf import TFIDF
@@ -74,8 +75,20 @@ def upload_img():
     if file and allowed_file(file.filename):
         filename = str(int(time.time())) + '_' + secure_filename(file.filename)
         file.save(os.path.join(config.UPLOAD_DIR, filename))
-        print(url_for('fetch_img', img_name=filename))
-        return {'image_path': url_for('fetch_img', img_name=filename)}
+        return {'image': img_name}
+
+@app.route("/v1/examples")
+def fetch_examples():
+    count = request.args.get('count', default=1, type=int)
+    if count > len(df_query):
+        count = len(df_query)
+    examples = (
+        df_query
+        .sample(n=count)[['posting_id', 'image', 'title']]
+        .rename(columns={'posting_id': "id"})
+        .to_json(orient="records")
+    )
+    return {'count': count, 'results': json.loads(examples)}
 
 @app.route("/v1/exp")
 def query_exp():
@@ -96,13 +109,14 @@ def query_exp():
 def query():
     text = request.args.get('text', default='')
     image = request.args.get('image', default='')
+    posting_id = request.args.get('id', default='')
     model_text = request.args.get('model_text', default='')
     model_image = request.args.get('model_image', default='')
 
     df_query = pd.DataFrame(data={
         'title': [text], 
         'image': [image], 
-        'posting_id': [''], 
+        'posting_id': [posting_id], 
         'image_phash': [''], 
         'label_group': [0]
     })
@@ -112,6 +126,7 @@ def query():
     return {
         'text': text,
         'image': image,
+        'id': posting_id,
         'model_text': model_text,
         'model_image': model_image,
         'processing_time': processing_time,

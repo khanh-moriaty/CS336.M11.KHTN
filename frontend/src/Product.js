@@ -15,7 +15,7 @@ export default function Message(props) {
                     component="img"
                     // height="120"
                     style={{ objectFit: 'fill' }}
-                    image={props.image}
+                    image={'http://192.168.24.43:8080/v1/img/' + props.image}
                 />
                 <CardContent style={{ display: 'flex', flexDirection: "column", flex: '1' }}>
                     <Typography variant="caption2" color="text.secondary">

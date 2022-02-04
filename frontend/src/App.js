@@ -75,38 +75,13 @@ function Copyright() {
     );
 }
 
-const exampleList = [
-    {
-        image: "https://i.imgur.com/K7q92AB.jpg",
-        title: "choco ball lagie coklat lagie grosircokelat lagie murah chocoball kiloan chocobal coklat kiloan 1kg"
-    },
-    {
-        image: "https://i.imgur.com/oVwBnvh.jpg",
-        title: "marcks teens compact powder"
-    },
-    {
-        image: "https://i.imgur.com/4k3vVKr.jpg",
-        title: "arshop maycreate moisturizing uv spray 150ml 1 kg muat 6pcs"
-    },
-    {
-        image: "https://i.imgur.com/D0MTKX7.jpg",
-        title: "dzuvia tunik neda tunik"
-    },
-    {
-        image: "https://i.imgur.com/D0MTKX7.jpg",
-        title: "tunik dzuvia kancing hidup syari moscrepe premium"
-    },
-    {
-        image: "https://i.imgur.com/D0MTKX7.jpg",
-        title: "dzuvia tunik neda tunik"
-    },
-]
-
 export default function App() {
 
     const classes = useStyles();
 
-    const [currentImage, setCurrentImage] = React.useState("https://i.imgur.com/D0MTKX7.jpg");
+    const [exampleList, setExampleList] = React.useState([])
+    const [currentId, setCurrentId] = React.useState("")
+    const [currentImage, setCurrentImage] = React.useState("007fca8ce9a042f9e1656ce8f96ba19d.jpg");
     const [currentTitle, setCurrentTitle] = React.useState("");
 
     const handleFileInputChange = (e) => {
@@ -126,18 +101,33 @@ export default function App() {
             .then((response) => response.json())
             .then((result) => {
                 console.log('Success:', result);
-                setCurrentImage('http://192.168.24.43:8080' + result['image_path']);
+                setCurrentId("");
+                setCurrentImage(result['image']);
             })
             .catch((error) => {
                 console.error('Error:', error);
             });
     }
 
-    var tmpList = [];
-    for (var i=0; i<100; ++i)
-        tmpList = tmpList.concat(exampleList);
+    // When app starts, fetch example list
+    React.useEffect(() => {
 
-    const [resultList, setResultList] = React.useState(tmpList);
+        fetch('http://192.168.24.43:8080/v1/examples?count=6')
+            .then((response) => response.json())
+            .then((result) => {
+                console.log('Success:', result);
+                setExampleList(result['results']);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }, [])
+
+    React.useEffect(() => {
+        console.log('Debug: ', exampleList);
+    }, [exampleList])
+
+    const [resultList, setResultList] = React.useState([]);
     const [page, setPage] = React.useState(1);
     const [currentPage, setCurrentPage] = React.useState([]);
     const imgPerPage = 18;
@@ -189,14 +179,14 @@ export default function App() {
                                     <TextField
                                         label="Product title"
                                         value={currentTitle}
-                                        onChange={(e) => { setCurrentTitle(e.target.value) }}
+                                        onChange={(e) => { setCurrentId(""); setCurrentTitle(e.target.value); }}
                                         id="outlined-basic"
                                         variant="outlined"
                                         size="small"
                                     />
                                     <label htmlFor="contained-button-file">
                                         <img
-                                            src={currentImage}
+                                            src={'http://192.168.24.43:8080/v1/img/' + currentImage}
                                             alt="selected query"
                                             style={{
                                                 margin: "10px",
@@ -260,6 +250,7 @@ export default function App() {
                                                     image={example.image}
                                                     title={example.title}
                                                     onClick={() => {
+                                                        setCurrentId(example.id)
                                                         setCurrentImage(example.image);
                                                         setCurrentTitle(example.title);
                                                     }}
