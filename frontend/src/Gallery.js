@@ -45,7 +45,6 @@ export default function Gallery(props) {
 
     const classes = useStyles();
 
-    console.log(props);
     const pageCount = Math.ceil(props.imgList.length / props.imgPerPage);
 
     const topPagination = React.useRef();

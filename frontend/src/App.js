@@ -104,8 +104,6 @@ export default function App() {
             .then((response) => response.json())
             .then((result) => {
                 console.log('Success:', result);
-                // setCurrentId("");
-                // setCurrentImage(result['image']);
                 setCurrentQuery({
                     'id': "",
                     'image': result['image'],
@@ -138,6 +136,7 @@ export default function App() {
     const [resultList, setResultList] = React.useState([]);
     const [processingTime, setProcessingTime] = React.useState(0);
     const [corpusSize, setCorpusSize] = React.useState(0);
+    const [score, setScore] = React.useState("N/A");
     const [page, setPage] = React.useState(1);
     const [currentPage, setCurrentPage] = React.useState([]);
     const imgPerPage = 18;
@@ -160,6 +159,7 @@ export default function App() {
                 setResultList(result['results']);
                 setProcessingTime(result['processing_time']);
                 setCorpusSize(result['corpus_size']);
+                setScore(result['score']);
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -210,8 +210,6 @@ export default function App() {
                                         label="Product title"
                                         value={currentQuery.title}
                                         onChange={(e) => {
-                                            // setCurrentId(""); 
-                                            // setCurrentTitle(e.target.value); 
                                             setCurrentQuery({
                                                 'id': "",
                                                 'image': currentQuery['image'],
@@ -288,9 +286,6 @@ export default function App() {
                                                     image={example.image}
                                                     title={example.title}
                                                     onClick={() => {
-                                                        // setCurrentId(example.id)
-                                                        // setCurrentImage(example.image);
-                                                        // setCurrentTitle(example.title);
                                                         setCurrentQuery(example);
                                                     }}
                                                 />
@@ -303,8 +298,11 @@ export default function App() {
                     </Container>
 
                     <Container style={{ marginTop: "50px" }}>
-                        <Typography component="body1" variant="h6" align="center" color="text.secondary" paragraph>
+                        <Typography component="body1" variant="h6" align="center" color="text.secondary">
                             Found {resultList.length} / {corpusSize} results in {processingTime} seconds.
+                        </Typography>
+                        <Typography variant="body1" align="center" color="text.secondary">
+                            AP score: {score}.
                         </Typography>
                         <Gallery
                             imgList={resultList} imgPerPage={imgPerPage}

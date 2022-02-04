@@ -114,7 +114,10 @@ def query():
     model_image = request.args.get('model_image', default='')
 
     global df_query
+
+    evaluate = False
     if posting_id != "" and posting_id in df_query.posting_id.values:
+        evaluate = True
         posting = df_query.query(f"posting_id == '{posting_id}'").iloc[0]
         title = posting.title
         image = posting.image
@@ -129,6 +132,10 @@ def query():
     })
 
     results, processing_time = query_df(df_user_query, model_text, model_image)
+    if evaluate:
+        score = "{:.4f}".format(evaluate_map(results))
+    else:
+        score = 'N/A'
     results = results[posting_id]
 
     # Map results to corpus dataframe
@@ -147,6 +154,7 @@ def query():
         'processing_time': "{:.4f}".format(processing_time),
         'results': json.loads(results),
         'corpus_size': len(df_corpus),
+        'score': score,
     }
 
 if __name__ == "__main__":
