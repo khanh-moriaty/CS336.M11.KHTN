@@ -40,7 +40,7 @@ def extract_sift(img_list):
 
     print('Extracted SIFT feature in', str(timedelta(seconds=(end_time-start_time))))
 
-    np.save(os.path.join(config.DATASET_DIR, 'sift.npy'), feat)
+    np.savez_compressed(os.path.join(config.DATASET_DIR, 'sift.npz'), feat=feat)
 
     return feat
 
