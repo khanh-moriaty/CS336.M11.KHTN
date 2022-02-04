@@ -107,30 +107,45 @@ def query_exp():
 
 @app.route("/v1/query")
 def query():
-    text = request.args.get('text', default='')
+    title = request.args.get('title', default='')
     image = request.args.get('image', default='')
     posting_id = request.args.get('id', default='')
     model_text = request.args.get('model_text', default='')
     model_image = request.args.get('model_image', default='')
 
-    df_query = pd.DataFrame(data={
-        'title': [text], 
+    global df_query
+    if posting_id != "" and posting_id in df_query.posting_id.values:
+        posting = df_query.query(f"posting_id == '{posting_id}'").iloc[0]
+        title = posting.title
+        image = posting.image
+        print(title, image)
+
+    df_user_query = pd.DataFrame(data={
+        'title': [title], 
         'image': [image], 
         'posting_id': [posting_id], 
         'image_phash': [''], 
         'label_group': [0]
     })
 
-    results, processing_time = query_df(df_query, model_text, model_image)
+    results, processing_time = query_df(df_user_query, model_text, model_image)
+    results = results[posting_id]
+
+    # Map results to corpus dataframe
+    results = df_corpus[df_corpus.posting_id.isin(results)]
+    results = (results[['posting_id', 'image', 'title']]
+        .rename(columns={'posting_id': "id"})
+        .to_json(orient="records")
+    )
 
     return {
-        'text': text,
+        'title': title,
         'image': image,
         'id': posting_id,
         'model_text': model_text,
         'model_image': model_image,
         'processing_time': processing_time,
-        'results': results[''],
+        'results': json.loads(results),
     }
 
 if __name__ == "__main__":

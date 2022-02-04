@@ -10,8 +10,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 
 import { Container, Grid, Typography } from '@material-ui/core';
 
-import Image from 'material-ui-image';
-
 import { FormControl, TextField } from '@material-ui/core';
 
 import Product from './Product';

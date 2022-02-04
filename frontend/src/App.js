@@ -84,6 +84,12 @@ export default function App() {
     const [currentImage, setCurrentImage] = React.useState("007fca8ce9a042f9e1656ce8f96ba19d.jpg");
     const [currentTitle, setCurrentTitle] = React.useState("");
 
+    const [currentQuery, setCurrentQuery] = React.useState({
+        'id': "",
+        'image': "007fca8ce9a042f9e1656ce8f96ba19d.jpg",
+        'title': "",
+    })
+
     const handleFileInputChange = (e) => {
         const file = e.target.files[0];
         console.log(file);
@@ -101,8 +107,13 @@ export default function App() {
             .then((response) => response.json())
             .then((result) => {
                 console.log('Success:', result);
-                setCurrentId("");
-                setCurrentImage(result['image']);
+                // setCurrentId("");
+                // setCurrentImage(result['image']);
+                setCurrentQuery({
+                    'id': "",
+                    'image': result['image'],
+                    'title': currentQuery['title'],
+                })
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -135,6 +146,24 @@ export default function App() {
     React.useEffect(() => {
         setPage(1);
     }, [resultList]);
+
+    React.useEffect(() => {
+        var fetchURL;
+        if (currentQuery.id.length > 0)
+            fetchURL = 'http://192.168.24.43:8080/v1/query?model_text=tfidf&id=' + currentQuery.id;
+        else
+            fetchURL = 'http://192.168.24.43:8080/v1/query?model_text=tfidf&title=' + currentQuery.title + '&image=' + currentQuery.image;
+
+        fetch(fetchURL)
+            .then((response) => response.json())
+            .then((result) => {
+                console.log('Success:', result);
+                setResultList(result['results'])
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }, [currentQuery])
 
     return (
         <div className="App">
@@ -178,15 +207,23 @@ export default function App() {
                                 <Grid item xs={12} md={6}>
                                     <TextField
                                         label="Product title"
-                                        value={currentTitle}
-                                        onChange={(e) => { setCurrentId(""); setCurrentTitle(e.target.value); }}
+                                        value={currentQuery.title}
+                                        onChange={(e) => {
+                                            // setCurrentId(""); 
+                                            // setCurrentTitle(e.target.value); 
+                                            setCurrentQuery({
+                                                'id': "",
+                                                'image': currentQuery['image'],
+                                                'title': e.target.value,
+                                            })
+                                        }}
                                         id="outlined-basic"
                                         variant="outlined"
                                         size="small"
                                     />
                                     <label htmlFor="contained-button-file">
                                         <img
-                                            src={'http://192.168.24.43:8080/v1/img/' + currentImage}
+                                            src={'http://192.168.24.43:8080/v1/img/' + currentQuery.image}
                                             alt="selected query"
                                             style={{
                                                 margin: "10px",
@@ -250,9 +287,10 @@ export default function App() {
                                                     image={example.image}
                                                     title={example.title}
                                                     onClick={() => {
-                                                        setCurrentId(example.id)
-                                                        setCurrentImage(example.image);
-                                                        setCurrentTitle(example.title);
+                                                        // setCurrentId(example.id)
+                                                        // setCurrentImage(example.image);
+                                                        // setCurrentTitle(example.title);
+                                                        setCurrentQuery(example);
                                                     }}
                                                 />
                                             </Grid>
