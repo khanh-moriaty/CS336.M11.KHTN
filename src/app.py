@@ -75,7 +75,7 @@ def upload_img():
     if file and allowed_file(file.filename):
         filename = str(int(time.time())) + '_' + secure_filename(file.filename)
         file.save(os.path.join(config.UPLOAD_DIR, filename))
-        return {'image': img_name}
+        return {'image': filename}
 
 @app.route("/v1/examples")
 def fetch_examples():
@@ -144,8 +144,9 @@ def query():
         'id': posting_id,
         'model_text': model_text,
         'model_image': model_image,
-        'processing_time': processing_time,
+        'processing_time': "{:.4f}".format(processing_time),
         'results': json.loads(results),
+        'corpus_size': len(df_corpus),
     }
 
 if __name__ == "__main__":

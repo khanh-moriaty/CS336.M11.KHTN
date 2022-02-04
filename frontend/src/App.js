@@ -80,9 +80,6 @@ export default function App() {
     const classes = useStyles();
 
     const [exampleList, setExampleList] = React.useState([])
-    const [currentId, setCurrentId] = React.useState("")
-    const [currentImage, setCurrentImage] = React.useState("007fca8ce9a042f9e1656ce8f96ba19d.jpg");
-    const [currentTitle, setCurrentTitle] = React.useState("");
 
     const [currentQuery, setCurrentQuery] = React.useState({
         'id': "",
@@ -139,6 +136,8 @@ export default function App() {
     }, [exampleList])
 
     const [resultList, setResultList] = React.useState([]);
+    const [processingTime, setProcessingTime] = React.useState(0);
+    const [corpusSize, setCorpusSize] = React.useState(0);
     const [page, setPage] = React.useState(1);
     const [currentPage, setCurrentPage] = React.useState([]);
     const imgPerPage = 18;
@@ -158,7 +157,9 @@ export default function App() {
             .then((response) => response.json())
             .then((result) => {
                 console.log('Success:', result);
-                setResultList(result['results'])
+                setResultList(result['results']);
+                setProcessingTime(result['processing_time']);
+                setCorpusSize(result['corpus_size']);
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -301,11 +302,16 @@ export default function App() {
                         </Paper>
                     </Container>
 
-                    <Gallery
-                        imgList={resultList} imgPerPage={imgPerPage}
-                        setPage={setPage} setCurrentPage={setCurrentPage}
-                        page={page} currentPage={currentPage}
-                    />
+                    <Container style={{ marginTop: "50px" }}>
+                        <Typography component="body1" variant="h6" align="center" color="text.secondary" paragraph>
+                            Found {resultList.length} / {corpusSize} results in {processingTime} seconds.
+                        </Typography>
+                        <Gallery
+                            imgList={resultList} imgPerPage={imgPerPage}
+                            setPage={setPage} setCurrentPage={setCurrentPage}
+                            page={page} currentPage={currentPage}
+                        />
+                    </Container>
                 </Box>
                 {/* Footer */}
                 <Box sx={{ bgcolor: 'background.paper', p: 6 }} component="footer">

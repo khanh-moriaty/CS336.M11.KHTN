@@ -98,10 +98,7 @@ export default function Gallery(props) {
     }, [props.page])
 
     return (
-        <Container style={{ marginTop: "50px", padding: "0px 50px" }}>
-            <Typography component="body1" variant="h6" align="center" color="text.secondary" paragraph>
-                Found {props.imgList.length} results.
-            </Typography>
+        <Container style={{ padding: "0px 50px" }}>
             <Pagination
                 className={classes.pagination}
                 ref={topPagination}
