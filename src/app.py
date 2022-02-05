@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 
 from models.text.tfidf import TFIDF
 from models.text.bm25 import BM25
+from models.image.sift import SIFT
 from utils.evaluate import EvaluateMAP
 import config
 
@@ -16,7 +17,9 @@ df_corpus = pd.read_csv(os.path.join(config.DATASET_DIR, 'corpus.csv'))
 df_query = pd.read_csv(os.path.join(config.DATASET_DIR, 'query.csv'))
 
 models = {
-    'tfidf': TFIDF(df_corpus, config.TFIDF_THRESHOLD)
+    'tfidf': TFIDF(df_corpus, config.TFIDF_THRESHOLD),
+    'bm25': BM25(df_corpus),
+    'sift': SIFT(df_corpus),
 }
 
 evaluate_map = EvaluateMAP(df_corpus, df_query)
@@ -33,7 +36,7 @@ def query_df(df_query, model_text, model_image):
         results = models[model_text](df_query)
 
     if model_image in ['sift']:
-        pass
+        results = models[model_image](df_query)
 
     end_time = time.time()
     processing_time = end_time - start_time

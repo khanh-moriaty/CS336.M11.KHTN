@@ -8,6 +8,7 @@ from datetime import timedelta
 from scipy.cluster.vq import kmeans, vq
 from sklearn.preprocessing import normalize
 from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.cluster import KMeans
 
 import config
 
@@ -44,10 +45,6 @@ def extract_sift(img_list):
 
     return feat
 
-feat = extract_sift(img_list)
-
-raise Exception()
-
 def generate_codebook(feat, k=50):
     # Stack all features together
     alldes = np.vstack(feat)
@@ -55,7 +52,10 @@ def generate_codebook(feat, k=50):
     # Perform K-means clustering
     alldes = np.float32(alldes)      # convert to float, required by kmeans and vq functions
     start_time = time.time()
-    codebook, distortion = kmeans(alldes, k)
+    # codebook, distortion = kmeans(alldes, k)
+    codebook = KMeans(n_clusters=k, random_state=42).fit(alldes).cluster_centers_
+    end_time = time.time()
+    print('kmeans', end_time - start_time)
     code, distortion = vq(alldes, codebook)
     end_time = time.time()
     print("Built {}-cluster codebook from {} images in {}".format(
@@ -64,77 +64,64 @@ def generate_codebook(feat, k=50):
         str(timedelta(seconds=(end_time-start_time))),
     ))
 
-    # Save codebook as pickle file
-    pickle.dump(codebook, open("codebook.pkl", "wb"))
-
+    np.savez_compressed(os.path.join(config.DATASET_DIR, 'sift_codebook.npz'), codebook=codebook)
     return codebook
 
-feat = np.load(os.path.join(config.DATASET_DIR, 'sift.npy'))
-generate_codebook()
-
-# Load cookbook
-codebook = pickle.load(open("codebook.pkl", "rb"))
-
-##############################################################################
-
-# these labels are the classes assigned to the actual plant names
-labels = ('C1','C2','C3','C4','C5','C6','C7','C8','C9','C10')     # BUG FIX 1: changed class label from integer to string
-
-
-#====================================================================
-# Bag-of-word Features
-#====================================================================
-# Create Bag-of-word list
-bow = []
-
-# Get label for each image, and put into a histogram (BoW)
-for f in feat:
-    code, distortion = vq(f, codebook)
-    bow_hist, _ = np.histogram(code, k, normed=True)
-    bow.append(bow_hist)
+def extract_bow(codebook, feat, k=50):
+    #====================================================================
+    # Bag-of-word Features
+    #====================================================================
+    # Create Bag-of-word list
+    bow = []
     
-# Stack them together
-temparr = np.vstack(bow)
+    # Get label for each image, and put into a histogram (BoW)
+    for f in tqdm.tqdm(feat):
+        code, distortion = vq(f, codebook)
+        bow_hist, _ = np.histogram(code, k, density=True)
+        bow.append(bow_hist)
+    
+    # Stack them together
+    temparr = np.vstack(bow)
+    
+    # Put them into feature vector
+    feat = np.reshape(temparr, (temparr.shape[0], temparr.shape[1]) )
+    
+    np.savez_compressed(os.path.join(config.DATASET_DIR, 'sift_bow.npz'), feat=feat)
+    
+    return feat, bow
 
-# Put them into feature vector
-fv = np.reshape(temparr, (temparr.shape[0], temparr.shape[1]) )
-del temparr
-
-
-# pickle your features (bow)
-pickle.dump(fv, open("bow.pkl", "wb"))
-print('')
-print('Bag-of-words features pickled!')
-
-#====================================================================
-# TF-IDF Features
-#====================================================================
-def tfidf(bow):
-	# td-idf weighting
-    transformer = TfidfTransformer(smooth_idf=True)
-    t = transformer.fit_transform(bow).toarray()
+def extract_tfidf(codebook, feat, k=50):
+    #====================================================================
+    # TF-IDF Features
+    #====================================================================
+    def tfidf(bow):
+        # td-idf weighting
+        transformer = TfidfTransformer(smooth_idf=True)
+        t = transformer.fit_transform(bow).toarray()
         
-    # normalize by Euclidean (L2) norm before returning 
-    t = normalize(t, norm='l2', axis=1)
+        # normalize by Euclidean (L2) norm before returning 
+        t = normalize(t, norm='l2', axis=1)
+        
+        return t
     
-    return t
+    bow = []
+    
+    # Get label for each image, and put into a histogram (BoW)
+    for f in tqdm.tqdm(feat):
+        code, distortion = vq(f, codebook)
+        bow_hist, _ = np.histogram(code, k)
+        bow.append(bow_hist)
+    
+    # re-run vq without normalization, normalize after computing tf-idf
+    bow = np.vstack(bow)
+    t = tfidf(bow)
+    np.savez_compressed(os.path.join(config.DATASET_DIR, 'sift_bow_raw.npz'), feat=bow)
+    
+    return bow, t
 
-# re-run vq without normalization, normalize after computing tf-idf
-bow = np.vstack(bow)
-t = tfidf(bow)
 
-# pickle your features (tfidf)
-pickle.dump(t, open("tfidf.pkl", "wb"))
-print('TF-IDF features pickled!')
-
-#====================================================================
-# Baseline Features
-#====================================================================
-# Stack all features together
-base_feat = np.vstack(base_feat)
-
-# pickle your features (baseline)
-pickle.dump(base_feat, open("base.pkl", "wb"))
-print('Baseline features pickled!')
-
-#====================================================================
+if __name__ == '__main__':
+    feat = np.load(os.path.join(config.DATASET_DIR, 'backup', 'sift.npz'), allow_pickle=True)['feat']
+    codebook = np.load(os.path.join(config.DATASET_DIR, 'backup', 'sift_codebook.npz'), allow_pickle=True)['codebook']
+    print('ok')
+    codebook = generate_codebook(feat)
