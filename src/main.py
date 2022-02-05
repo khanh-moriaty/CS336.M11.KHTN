@@ -1,6 +1,7 @@
 import os
 
 import pandas as pd
+import numpy as np
 
 from models.text.tfidf import TFIDF
 from models.text.bm25 import BM25
@@ -16,10 +17,11 @@ if __name__ == '__main__':
 
     evaluate_map = EvaluateMAP(df_corpus, df_query)
 
-    sift = SIFT(df_corpus, threshold=0.9)
+    sift = SIFT(df_corpus, tfidf=False)
     print('loaded sift')
-    pred = sift.query(df_query.iloc[:2])
-    print(evaluate_map(pred))
+    for threshold in np.arange(0.5, 1, 0.05):
+        pred = sift.query(df_query.iloc[:10], threshold=threshold)
+        print(threshold, evaluate_map(pred))
 
     # bm25 = BM25(df_corpus)
     # pred = bm25.query(df_query)
