@@ -38,7 +38,7 @@ class SIFT(Model):
             img = cv2.imread(os.path.join(config.DATASET_DIR, 'train_images', img))
             feat = self.compute_features(img)
             code, distortion = vq(feat, self.codebook)
-            bow_hist, _ = np.histogram(code, 50)
+            bow_hist, _ = np.histogram(code, config.SIFT_CODEBOOK_SIZE)
             embeddings_query.append(bow_hist)
 
         embeddings_query = normalize(embeddings_query, norm='l2', axis=1)

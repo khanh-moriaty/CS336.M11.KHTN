@@ -8,7 +8,7 @@ from datetime import timedelta
 from scipy.cluster.vq import kmeans, vq
 from sklearn.preprocessing import normalize
 from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, MiniBatchKMeans
 
 import config
 
@@ -53,12 +53,12 @@ def generate_codebook(feat, k=50):
     alldes = np.float32(alldes)      # convert to float, required by kmeans and vq functions
     start_time = time.time()
     # codebook, distortion = kmeans(alldes, k)
-    codebook = KMeans(n_clusters=k, random_state=42).fit(alldes).cluster_centers_
+    codebook = MiniBatchKMeans(n_clusters=k, random_state=42, batch_size=k*4, verbose=True).fit(alldes).cluster_centers_
     end_time = time.time()
     print('kmeans', end_time - start_time)
-    code, distortion = vq(alldes, codebook)
+    # code, distortion = vq(alldes, codebook)
     end_time = time.time()
-    print("Built {}-cluster codebook from {} images in {}".format(
+    print("Built {}-cluster codebook from {} feature vectors in {}".format(
         k,
         alldes.shape[0],
         str(timedelta(seconds=(end_time-start_time))),
@@ -124,4 +124,6 @@ if __name__ == '__main__':
     feat = np.load(os.path.join(config.DATASET_DIR, 'backup', 'sift.npz'), allow_pickle=True)['feat']
     codebook = np.load(os.path.join(config.DATASET_DIR, 'backup', 'sift_codebook.npz'), allow_pickle=True)['codebook']
     print('ok')
-    codebook = generate_codebook(feat)
+    codebook = generate_codebook(feat, k=config.SIFT_CODEBOOK_SIZE)
+    extract_bow(codebook, feat, k=config.SIFT_CODEBOOK_SIZE)
+    extract_tfidf(codebook, feat, k=config.SIFT_CODEBOOK_SIZE)
